@@ -74,3 +74,25 @@ exports.getPost = (req, res, next) => {
       next();
     });
 };
+
+exports.deletePost = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        const error = new Error("Could not fint post.");
+        error.statusCode = 404;
+        throw error;
+      }
+      return Post.findByIdAndRemove(postId);
+    })
+    .then((result) => {
+      res.status(200).message({ message: "Deleted post." });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next();
+    });
+};
