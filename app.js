@@ -5,6 +5,7 @@ const path = require("path");
 const multer = require("multer");
 
 const feedRoutes = require("./routes/feed.route");
+const authRoutes = require("./routes/auth.route");
 
 const app = express();
 
@@ -41,17 +42,19 @@ app.use((req, res, next) => {
     "Origin, X-requested-With, Content-Type, Accept"
   );
   if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "GET, POST, DELETE");
+    res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
     return res.status(200).json({});
   }
   next();
 });
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 app.use((error, req, res, next) => {
   console.error(error);
   const status = error.statusCode || 500;
+  const data = error.data;
   const message = error.message;
-  res.status(status).json({ message: message });
+  res.status(status).json({ message: message, data: data });
 });
 
 mongoose
